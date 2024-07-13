@@ -4,25 +4,25 @@ function GameBoard() {
     const board = [];
 
     for (let i = 0; i < rows; i++) {
-        board[i] = []
+        board[i] = [];
         for (let j = 0; j < columns; j++) {
             board[i].push(Cell());
         }
     }
+
     const getBoard = () => board;
 
     const drawCell = (row, column, token) => {
-        if (!board[row][column].getValue() === 0) return;
-        board[row][column].addToken(token)
+        if (!board[row][column].getValue()) {
+            board[row][column].addToken(token);
+        }
+    };
 
-    }
-
-    return { getBoard, drawCell }
-
-};
+    return { getBoard, drawCell };
+}
 
 function Cell() {
-    let value = 0;
+    let value = "";
 
     const addToken = (token) => {
         value = token;
@@ -57,23 +57,23 @@ function GameController(playerOne = "Player One", playerTwo = "Player Two") {
 
     const checkWin = () => {
         const winningCombinations = [
-            [[0, 0], [0, 1], [0, 2]],
-            [[1, 0], [1, 1], [1, 2]],
-            [[2, 0], [2, 1], [2, 2]],
-            [[0, 0], [1, 0], [2, 0]],
-            [[0, 1], [1, 1], [2, 1]],
-            [[0, 2], [1, 2], [2, 2]],
-            [[0, 0], [1, 1], [2, 2]],
-            [[0, 2], [1, 1], [2, 0]]
+            [board[0][0], board[0][1], board[0][2]],
+            [board[1][0], board[1][1], board[1][2]],
+            [board[2][0], board[2][1], board[2][2]],
+            [board[0][0], board[1][0], board[2][0]],
+            [board[0][1], board[1][1], board[2][1]],
+            [board[0][2], board[1][2], board[2][2]],
+            [board[0][0], board[1][1], board[2][2]],
+            [board[0][2], board[1][1], board[2][0]]
         ];
 
-        for (const combination of winningCombinations) {
+        for (combination of winningCombinations) {
             const [a, b, c] = combination;
-            const cellA = board[a[0]][a[1]].getValue();
-            const cellB = board[b[0]][b[1]].getValue();
-            const cellC = board[c[0]][c[1]].getValue();
+            const cellA = a.getValue();
+            const cellB = b.getValue();
+            const cellC = c.getValue();
 
-            if (cellA !== 0 && cellA === cellB && cellB === cellC) {
+            if (cellA && (cellA === cellB) && (cellB === cellC)) {
                 return true;
             }
         }
@@ -107,4 +107,41 @@ function ScreenController() {
     const game = GameController()
     const boardDiv = document.querySelector(".board")
 
+    const turnDiv = document.querySelector(".turn")
+    const startBtn = document.querySelector(".startBtn")
+    const restartBtn = document.querySelector(".restartBtn")
+
+    const render = () => {
+        boardDiv.textContent = ""
+        const board = game.getBoard();
+        board.forEach((row, rowIndex) => {
+            row.forEach((cell, columnIndex) => {
+                const cellButton = document.createElement("button");
+                cellButton.classList.add("cell");
+                cellButton.dataset.row = rowIndex
+                cellButton.dataset.column = columnIndex
+                cellButton.textContent = cell.getValue();
+                boardDiv.appendChild(cellButton);
+            })
+        })
+
+
+
+    }
+    function clickHandlerBoard(e) {
+        const selectedColumn = e.target.dataset.column;
+        const selectedRow = e.target.dataset.row;
+        // Make sure I've clicked a column and not the gaps in between
+        if (!selectedColumn) return;
+
+        game.playRound(selectedRow, selectedColumn);
+        render();
+    }
+    boardDiv.addEventListener("click", clickHandlerBoard);
+
+    render();
+
 }
+
+
+ScreenController()
