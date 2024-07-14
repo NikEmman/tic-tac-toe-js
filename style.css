@@ -9,12 +9,16 @@ body {
     display: grid;
     gap: 3px;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     height: 700px;
     width: 700px;
 }
 
 .cell {
     border: 2px solid red;
-    padding: 10px;
-    font-size: 10em;
+    font-size: 8em;
+}
+
+.hidden {
+    display: none;
 }

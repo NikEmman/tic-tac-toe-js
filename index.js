@@ -3,12 +3,15 @@ function GameBoard() {
     const columns = 3;
     const board = [];
 
+
     for (let i = 0; i < rows; i++) {
         board[i] = [];
         for (let j = 0; j < columns; j++) {
             board[i].push(Cell());
         }
     }
+
+
 
     const getBoard = () => board;
 
@@ -19,6 +22,7 @@ function GameBoard() {
     };
 
     return { getBoard, drawCell };
+
 }
 
 function Cell() {
@@ -36,7 +40,7 @@ function Cell() {
     };
 };
 
-function GameController(playerOne = "Player One", playerTwo = "Player Two") {
+function GameController(playerOne, playerTwo) {
     const board = GameBoard();
     const players = [
         {
@@ -48,7 +52,7 @@ function GameController(playerOne = "Player One", playerTwo = "Player Two") {
             token: "O"
         }
     ]
-    const currentPlayer = players[0]
+    let currentPlayer = players[0]
 
     const switchPlayerTurn = () => {
         currentPlayer = currentPlayer === players[0] ? players[1] : players[0]
@@ -56,56 +60,62 @@ function GameController(playerOne = "Player One", playerTwo = "Player Two") {
     const getCurrentPlayer = () => currentPlayer
 
     const checkWin = () => {
+        const actualBoard = board.getBoard()
         const winningCombinations = [
-            [board[0][0], board[0][1], board[0][2]],
-            [board[1][0], board[1][1], board[1][2]],
-            [board[2][0], board[2][1], board[2][2]],
-            [board[0][0], board[1][0], board[2][0]],
-            [board[0][1], board[1][1], board[2][1]],
-            [board[0][2], board[1][2], board[2][2]],
-            [board[0][0], board[1][1], board[2][2]],
-            [board[0][2], board[1][1], board[2][0]]
+            [actualBoard[0][0], actualBoard[0][1], actualBoard[0][2]],
+            [actualBoard[1][0], actualBoard[1][1], actualBoard[1][2]],
+            [actualBoard[2][0], actualBoard[2][1], actualBoard[2][2]],
+            [actualBoard[0][0], actualBoard[1][0], actualBoard[2][0]],
+            [actualBoard[0][1], actualBoard[1][1], actualBoard[2][1]],
+            [actualBoard[0][2], actualBoard[1][2], actualBoard[2][2]],
+            [actualBoard[0][0], actualBoard[1][1], actualBoard[2][2]],
+            [actualBoard[0][2], actualBoard[1][1], actualBoard[2][0]]
         ];
 
-        for (combination of winningCombinations) {
+        for (const combination of winningCombinations) {
             const [a, b, c] = combination;
             const cellA = a.getValue();
             const cellB = b.getValue();
             const cellC = c.getValue();
 
-            if (cellA && (cellA === cellB) && (cellB === cellC)) {
-                return true;
-            }
-        }
+            if ((cellA !== "") && (cellA === cellB) && (cellB === cellC)) return true;
 
+        }
         return false;
+
     }
 
-    const checkBoardFull = () => board.every(row => row.every(cell => cell.getValue() !== 0));
+    const checkBoardFull = () => board.getBoard().every(row => row.every(cell => cell.getValue() !== ""));
 
     const checkGameEnd = () => (checkWin() || checkBoardFull());
 
 
     const playRound = (row, column) => {
+
         board.drawCell(row, column, getCurrentPlayer().token)
-        if (checkGameEnd()) return;
         switchPlayerTurn()
     };
+    const getGameResult = () => {
+        if (checkWin()) {
+            switchPlayerTurn()
+            return `Amazing game, ${currentPlayer.name} is the winner!`
+        }
+        else if (checkBoardFull()) {
+            return "Good game, it's a draw!"
 
-    // const restart = () => {
-    //     board = GameBoard();
-    //     currentPlayer = players[0]
-
-    // }
+        }
+    }
 
 
-    return { getCurrentPlayer, playRound, getBoard: board.getBoard };
+    return { getCurrentPlayer, playRound, checkGameEnd, getGameResult, getBoard: board.getBoard };
 
 };
 
 function ScreenController() {
-    const game = GameController()
+    let game;
     const boardDiv = document.querySelector(".board")
+    const playerOne = document.getElementById("playerOne")
+    const playerTwo = document.getElementById("playerTwo")
 
     const turnDiv = document.querySelector(".turn")
     const startBtn = document.querySelector(".startBtn")
@@ -131,15 +141,47 @@ function ScreenController() {
     function clickHandlerBoard(e) {
         const selectedColumn = e.target.dataset.column;
         const selectedRow = e.target.dataset.row;
-        // Make sure I've clicked a column and not the gaps in between
-        if (!selectedColumn) return;
+        const cell = game.getBoard()[selectedRow][selectedColumn].getValue()
+        if (!selectedColumn || (cell !== "") || game.checkGameEnd()) return;
 
         game.playRound(selectedRow, selectedColumn);
+        updateMessage();
         render();
     }
+    function updateMessage() {
+        turnDiv.textContent = game.checkGameEnd() ? game.getGameResult() : `It's ${game.getCurrentPlayer().name}'s turn`;
+    }
+    function restartGame() {
+        emptyContents()
+        revealButtons()
+    }
     boardDiv.addEventListener("click", clickHandlerBoard);
+    restartBtn.addEventListener("click", restartGame);
+    function startGame() {
+        const p1 = playerOne.value || "Player One";
+        const p2 = playerTwo.value || "Player Two";
+        game = GameController(p1, p2);
+        render();
+        hideButtons()
+    }
+    function emptyContents() {
+        playerOne.value = ""
+        playerTwo.value = ""
+        turnDiv.textContent = "";
+        boardDiv.textContent = ""
+    }
+    function hideButtons() {
+        startBtn.classList.add("hidden");
+        playerOne.classList.add("hidden");
+        playerTwo.classList.add("hidden");
+    }
+    function revealButtons() {
+        startBtn.classList.remove("hidden");
+        playerOne.classList.remove("hidden");
+        playerTwo.classList.remove("hidden");
 
-    render();
+    }
+    startBtn.addEventListener("click", startGame)
 
 }
 
