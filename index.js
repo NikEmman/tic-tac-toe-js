@@ -143,10 +143,12 @@ function ScreenController() {
         const selectedRow = e.target.dataset.row;
         const cell = game.getBoard()[selectedRow][selectedColumn].getValue()
         if (!selectedColumn || (cell !== "") || game.checkGameEnd()) return;
-
         game.playRound(selectedRow, selectedColumn);
         updateMessage();
         render();
+        const clickedCell = document.querySelector(`[data-row="${selectedRow}"][data-column="${selectedColumn}"]`)
+        clickedCell.classList.add("clicked")
+
     }
     function updateMessage() {
         turnDiv.textContent = game.checkGameEnd() ? game.getGameResult() : `It's ${game.getCurrentPlayer().name}'s turn`;
