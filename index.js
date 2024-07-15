@@ -154,7 +154,7 @@ function ScreenController() {
         turnDiv.textContent = game.checkGameEnd() ? game.getGameResult() : `It's ${game.getCurrentPlayer().name}'s turn`;
     }
     function restartGame() {
-        emptyContents()
+        resetContents()
         revealButtons()
     }
     boardDiv.addEventListener("click", clickHandlerBoard);
@@ -167,10 +167,10 @@ function ScreenController() {
         render();
         hideButtons()
     }
-    function emptyContents() {
+    function resetContents() {
         playerOne.value = ""
         playerTwo.value = ""
-        turnDiv.textContent = "";
+        turnDiv.textContent = "Tic Tac Toe";
         boardDiv.textContent = ""
     }
     function hideButtons() {
