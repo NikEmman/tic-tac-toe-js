@@ -1,11 +1,21 @@
 body {
     display: flex;
+}
+
+
+
+main {
+    flex: 5;
+    display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1em;
 }
 
 .board {
-    border: 3px solid black;
+    padding: 3px;
+    border-radius: 10px;
+    border: 3px solid #2563eb;
     display: grid;
     gap: 3px;
     grid-template-columns: repeat(3, 1fr);
@@ -14,11 +24,63 @@ body {
     width: 700px;
 }
 
+aside {
+    padding: 4em;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2em;
+}
+
+.turn {
+    height: 2em;
+    width: 700px;
+    background-color: #2563eb;
+    border: 2px solid #13398b;
+    border-radius: 10px;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
 .cell {
-    border: 2px solid red;
+    border-radius: 10px;
     font-size: 8em;
 }
 
+
 .hidden {
     display: none;
+}
+
+.button {
+    border-radius: 8px;
+    border: none;
+    background-color: #2563eb;
+    color: white;
+    font-size: 18px;
+    padding: 16px 24px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.button:hover {
+    transform: scale(1.1);
+}
+
+input {
+    border: 2px solid #2563eb;
+    border-radius: 10px;
+    height: 3em;
+    transition: transform 0.3s ease-in-out;
+}
+
+input:focus {
+    transform: scale(1.1);
+    border: none;
+
+
 }
