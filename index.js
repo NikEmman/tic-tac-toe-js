@@ -163,6 +163,7 @@ function ScreenController() {
         const p1 = playerOne.value || "Player One";
         const p2 = playerTwo.value || "Player Two";
         game = GameController(p1, p2);
+        updateMessage();
         render();
         hideButtons()
     }
